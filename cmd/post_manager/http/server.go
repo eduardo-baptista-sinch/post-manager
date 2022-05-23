@@ -7,9 +7,15 @@ import (
 	"main/internal/infra/database"
 
 	"github.com/gofiber/fiber/v2"
+	"gorm.io/gorm"
 )
 
-func NewServer() *fiber.App {
+type Server struct {
+	App *fiber.App
+	DB  *gorm.DB
+}
+
+func NewServer() *Server {
 	app := fiber.New()
 
 	// TODO: read config from env variables
@@ -29,5 +35,12 @@ func NewServer() *fiber.App {
 	app.Get("/api/health", handlers.GetHealth)
 	app.Get("/api/posts", postsHandler.GetPosts)
 
-	return app
+	return &Server{
+		App: app,
+		DB:  db,
+	}
+}
+
+func (server *Server) Listen() {
+	server.App.Listen(":3000")
 }

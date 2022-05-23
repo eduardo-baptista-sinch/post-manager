@@ -1,20 +1,26 @@
-package integration
+package handlers
 
 import (
 	"io/ioutil"
-	"main/cmd/post_manager/http"
 	"net/http/httptest"
 	"testing"
 
+	"github.com/gofiber/fiber/v2"
 	"github.com/stretchr/testify/assert"
 )
 
+func setup() *fiber.App {
+	app := fiber.New()
+	app.Get("/api/health", GetHealth)
+	return app
+}
+
 func TestGetHealth(t *testing.T) {
-	server := http.NewServer()
+	app := setup()
 
 	req := httptest.NewRequest("GET", "/api/health", nil)
 
-	resp, _ := server.Test(req, -1)
+	resp, _ := app.Test(req, -1)
 
 	body, _ := ioutil.ReadAll(resp.Body)
 
